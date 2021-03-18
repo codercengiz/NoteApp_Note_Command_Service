@@ -1,0 +1,9 @@
+[package]
+name = "noteapp_note_command_service"
+version = "1"
+authors = ["codercengiz <codercengiz@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
