@@ -1,0 +1,68 @@
+name: noteapp_note_command_service
+version: "0.1.0"
+author: Cengiz G.  <codercengiz@gmail.com>
+about: Note App
+args:
+    - domain:
+        short: d
+        long: domain
+        env: DOMAIN
+        value_name: Domain
+        required: true
+        about: Sets domain of microservice
+        default_value: 127.0.0.1
+        takes_value: true
+    - port:
+        short: p
+        long: port
+        env: SERVICE_PORT
+        value_name: PORT
+        required: true
+        about: Sets port of microservice
+        default_value: "8080"
+        takes_value: true
+    - kafka-brokers-addr:
+        short: b
+        long: kafka-brokers-addr
+        env: KAFKA_BROKERS_ADDR
+        value_name: KAFKA_BROKERS_ADDR
+        required: true
+        default_value: localhost:9092
+        about: Sets address of kafka brokers
+        takes_value: true
+    - kafka-topics:
+        short: t
+        long: kafka-topics
+        env: KAFKA_TOPICS
+        value_name: KAFKA_TOPICS
+        required: true
+        default_value: abc
+        about: Sets topics of kafka
+        takes_value: true
+    - eventstore-socket-addr:
+        short: a
+        long: eventstore-socket-addr
+        env: EVENTSTORE_SOCKET_ADDR
+        value_name: EVENTSTORE_SOCKET_ADDR
+        required: true
+        about: Sets socket address of eventstore
+        default_value: 127.0.0.1:1113
+        takes_value: true
+    - eventstore-username:
+        short: u
+        long: eventstore-username
+        env: EVENTSTORE_USERNAME
+        value_name: EVENTSTORE_USERNAME
+        required: true
+        about: Sets username of eventstore
+        default_value: admin
+        takes_value: true
+    - eventstore-password:
+        short: ep
+        long: eventstore-password
+        env: EVENTSTORE_PASSWORD
+        value_name: EVENTSTORE_PASSWORD
+        required: true
+        about: Sets password of eventstore
+        default_value: demo
+        takes_value: true
