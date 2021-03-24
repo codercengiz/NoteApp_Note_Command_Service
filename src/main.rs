@@ -5,6 +5,8 @@ extern crate log;
 extern crate clap;
 
 mod settings;
+mod service;
+mod models;
 
 use crate::settings::Settings;
 use std::env;
@@ -17,5 +19,6 @@ async fn main() {
     env_logger::init();
     let settings = Settings::init();
     
+    service::run(settings);
     
 }

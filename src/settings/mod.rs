@@ -4,9 +4,9 @@ use std::fmt::Debug;
 use std::net::SocketAddr;
 
 pub(crate) struct Settings {
-    web_service_settings: WebServiceSettings,
-    kafka_settings: KafkaSettings,
-    eventstore_settings: EventstoreSettings,
+    pub web_api_settings: WebServerSettings,
+    pub kafka_settings: KafkaSettings,
+    pub eventstore_settings: EventstoreSettings,
 }
 
 impl Settings {
@@ -14,13 +14,13 @@ impl Settings {
         let yaml = load_yaml!("app_settings.yaml");
         let matches = App::from(yaml).get_matches();
         Settings {
-            web_service_settings: Self::get_web_service_settings(&matches),
+            web_api_settings: Self::get_web_api_settings(&matches),
             kafka_settings: Self::get_kafka_settings(&matches),
             eventstore_settings: Self::get_eventstore_settings(&matches),
         }
     }
 
-    fn get_web_service_settings(matches: &ArgMatches) -> WebServiceSettings {
+    fn get_web_api_settings(matches: &ArgMatches) -> WebServerSettings {
         let domain = matches
             .value_of("domain")
             .expect("Invalid Domain")
@@ -31,7 +31,7 @@ impl Settings {
             .parse()
             .expect("Invalid Socket Address");
 
-        WebServiceSettings { socket_addr }
+        WebServerSettings { socket_addr }
     }
 
     fn get_kafka_settings(matches: &ArgMatches) -> KafkaSettings {
@@ -71,7 +71,7 @@ impl Settings {
 }
 
 #[derive(Debug)]
-pub(crate) struct WebServiceSettings {
+pub(crate) struct WebServerSettings {
     pub(crate) socket_addr: SocketAddr,
 }
 
