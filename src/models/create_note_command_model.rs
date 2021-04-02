@@ -2,12 +2,13 @@
 use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize};
+use uuid::Uuid;
 
 
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct CreateNoteCommandModel {
-    pub command_id: String,
+    pub command_id: Uuid,
     #[serde(with = "ts_milliseconds")]
     pub command_timestamp: DateTime<Utc>,
     pub command_creator_id: String,

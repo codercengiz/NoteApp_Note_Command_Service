@@ -4,7 +4,7 @@ use std::fmt::Debug;
 use std::net::SocketAddr;
 
 pub(crate) struct Settings {
-    pub web_api_settings: WebServerSettings,
+    pub web_server_settings: WebServerSettings,
     pub kafka_settings: KafkaSettings,
     pub eventstore_settings: EventstoreSettings,
 }
@@ -14,7 +14,7 @@ impl Settings {
         let yaml = load_yaml!("app_settings.yaml");
         let matches = App::from(yaml).get_matches();
         Settings {
-            web_api_settings: Self::get_web_api_settings(&matches),
+            web_server_settings: Self::get_web_api_settings(&matches),
             kafka_settings: Self::get_kafka_settings(&matches),
             eventstore_settings: Self::get_eventstore_settings(&matches),
         }
