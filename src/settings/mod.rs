@@ -36,14 +36,14 @@ impl Settings {
 
     fn get_kafka_settings(matches: &ArgMatches) -> KafkaSettings {
         KafkaSettings {
-            brokers: matches
+            broker: matches
                 
                 .value_of("kafka-brokers-addr")
                 .expect("Invalid Brokers")
                 .to_string(),
 
-            topics: matches
-                .values_of("kafka-topics")
+            producer_topics: matches
+                .values_of("kafka-producer-topics")
                 .expect("Invalid Topics")
                 .map(|x| x.to_string())
                 .collect(),
@@ -77,8 +77,8 @@ pub(crate) struct WebServerSettings {
 
 #[derive(Debug)]
 pub(crate) struct KafkaSettings {
-    pub(crate) brokers: String,
-    pub(crate) topics: Vec<String>,
+    pub(crate) broker: String,
+    pub(crate) producer_topics: Vec<String>,
 }
 
 #[derive(Debug)]

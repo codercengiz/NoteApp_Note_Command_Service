@@ -18,10 +18,7 @@ use uuid::Uuid;
 pub(crate) struct EventstoreService {
     pub client: Client,
 }
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct TestEvent {
-    denem: String,
-}
+
 
 impl EventstoreService {
     pub async fn init(settings: EventstoreSettings) -> Self {
@@ -48,7 +45,7 @@ impl EventstoreService {
     pub async fn append_to_stream(
         &self,
         client: &Client,
-        user_id: String,
+        user_id: &str,
         data: &EventModel,
     ) -> Result<(), EventstoreServiceError> {
         // region append-to-stream

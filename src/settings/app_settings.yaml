@@ -13,7 +13,7 @@ args:
         default_value: 127.0.0.1
         takes_value: true
     - port:
-        short: p
+        short: o
         long: port
         env: SERVICE_PORT
         value_name: PORT
@@ -30,14 +30,14 @@ args:
         default_value: localhost:9092
         about: Sets address of kafka brokers
         takes_value: true
-    - kafka-topics:
+    - kafka-producer-topics:
         short: t
-        long: kafka-topics
-        env: KAFKA_TOPICS
-        value_name: KAFKA_TOPICS
+        long: kafka-producer-topics
+        env: KAFKA_PRODUCER_TOPICS
+        value_name: KAFKA_PRODUCER_TOPICS
         required: true
-        default_value: abc
-        about: Sets topics of kafka
+        default_value: note.command.service
+        about: Sets producer topics of kafka
         takes_value: true
     - eventstore-host-with-parameters:
         short: h
@@ -58,7 +58,7 @@ args:
         default_value: admin
         takes_value: true
     - eventstore-password:
-        short: ep
+        short: p
         long: eventstore-password
         env: EVENTSTORE_PASSWORD
         value_name: EVENTSTORE_PASSWORD

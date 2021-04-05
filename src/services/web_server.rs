@@ -7,18 +7,20 @@ use uuid::Uuid;
 use warp::http::StatusCode;
 use warp::{Filter, Rejection, Reply};
 
-use super::eventstore_service::EventstoreService;
+use super::{eventstore_service::EventstoreService, kafka_service::KafkaService};
 
 pub(crate) struct WebServer {
     pub socket_addr: SocketAddr,
     pub eventstore_service: EventstoreService,
+    pub kafka_service: KafkaService,
 }
 
 impl WebServer {
-    pub(crate) fn init(settings: WebServerSettings, eventstore_service: EventstoreService) -> Self {
+    pub(crate) fn init(settings: WebServerSettings, eventstore_service: EventstoreService, kafka_service:KafkaService) -> Self {
         WebServer {
             socket_addr: settings.socket_addr,
             eventstore_service,
+            kafka_service
         }
     }
     pub(crate) async fn start(self) {
@@ -39,29 +41,32 @@ impl WebServer {
             .and(warp::post())
             .and(warp::body::json())
             .and(warp::header::<String>("user-id"))
-            .and(Self::with_eventstore_service(
-                self.eventstore_service.clone(),
-            ))
+            .and(Self::with_eventstore_service(self.eventstore_service.clone()))
+            .and(Self::with_kafka_service(self.kafka_service.clone()))
             .and_then(Self::add_note_handler)
     }
     pub async fn add_note_handler(
         create_note_model: CreateNoteCommandModel,
         user_id: String,
         eventstore_service: EventstoreService,
+        kafka_service:KafkaService,
     ) -> Result<Box<dyn warp::Reply>, Infallible> {
-        Self::add_note(create_note_model, user_id, eventstore_service).await
+        Self::add_note(create_note_model, user_id, eventstore_service, kafka_service).await
     }
     pub async fn add_note(
         create_note_model: CreateNoteCommandModel,
         user_id: String,
         eventstore_service: EventstoreService,
+        kafka_service:KafkaService,
     ) -> Result<Box<dyn warp::Reply>, Infallible> {
         let command_model = CommandModel::CreateNoteCommandModel(create_note_model);
         let event_model = Self::command_to_event(command_model);
         //Ok(Box::new(warp::reply::json(&customer)))
         eventstore_service
-            .append_to_stream(&eventstore_service.client, user_id, &event_model)
+            .append_to_stream(&eventstore_service.client, &user_id, &event_model)
             .await;
+        let json = serde_json::to_string(&event_model).expect("Serde Error!");
+        let res = kafka_service.produce_message(&json,user_id);
         return Ok(Box::new(warp::reply::json(&event_model)));
     }
 
@@ -70,6 +75,13 @@ impl WebServer {
     ) -> impl Filter<Extract = (EventstoreService,), Error = Infallible> + Clone {
         warp::any().map(move || eventstore_service.clone())
     }
+
+    fn with_kafka_service(
+        kafka_service: KafkaService,
+    ) -> impl Filter<Extract = (KafkaService,), Error = Infallible> + Clone {
+        warp::any().map(move || kafka_service.clone())
+    }
+
     fn command_to_event(command_model: CommandModel) -> EventModel {
         match command_model {
             CommandModel::CreateNoteCommandModel(create_note_model) => {
