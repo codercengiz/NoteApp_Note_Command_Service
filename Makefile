@@ -23,3 +23,6 @@ delete-kafka:
 
 delete-networks:
 	@docker network ls --filter name=note-app -q | xargs docker network rm
+
+run:
+	@cargo run
