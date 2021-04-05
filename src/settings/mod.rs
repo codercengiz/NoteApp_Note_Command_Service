@@ -52,11 +52,11 @@ impl Settings {
 
     fn get_eventstore_settings(matches: &ArgMatches) -> EventstoreSettings {
         EventstoreSettings {
-            socket_addr: matches
-                .value_of("eventstore-socket-addr")
-                .expect("Invalid eventstore addr")
+            host_with_parameters: matches
+                .value_of("eventstore-host-with-parameters")
+                .expect("Invalid eventstore host")
                 .parse()
-                .expect("Unable to parse socket address"),
+                .expect("Unable to parse host"),
 
             username: matches
                 .value_of("eventstore-username")
@@ -83,7 +83,7 @@ pub(crate) struct KafkaSettings {
 
 #[derive(Debug)]
 pub(crate) struct EventstoreSettings {
-    pub(crate) socket_addr: SocketAddr,
+    pub(crate) host_with_parameters: String,
     pub(crate) username: String,
     pub(crate) password: String,
 }

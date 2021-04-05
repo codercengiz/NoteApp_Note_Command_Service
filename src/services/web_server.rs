@@ -39,7 +39,9 @@ impl WebServer {
             .and(warp::post())
             .and(warp::body::json())
             .and(warp::header::<String>("user-id"))
-            .and(Self::with_eventstore_service(self.eventstore_service.clone()))
+            .and(Self::with_eventstore_service(
+                self.eventstore_service.clone(),
+            ))
             .and_then(Self::add_note_handler)
     }
     pub async fn add_note_handler(
@@ -48,7 +50,6 @@ impl WebServer {
         eventstore_service: EventstoreService,
     ) -> Result<Box<dyn warp::Reply>, Infallible> {
         Self::add_note(create_note_model, user_id, eventstore_service).await
-
     }
     pub async fn add_note(
         create_note_model: CreateNoteCommandModel,
@@ -58,7 +59,9 @@ impl WebServer {
         let command_model = CommandModel::CreateNoteCommandModel(create_note_model);
         let event_model = Self::command_to_event(command_model);
         //Ok(Box::new(warp::reply::json(&customer)))
-        eventstore_service.append_to_stream(&eventstore_service.client, user_id, &event_model).await;
+        eventstore_service
+            .append_to_stream(&eventstore_service.client, user_id, &event_model)
+            .await;
         return Ok(Box::new(warp::reply::json(&event_model)));
     }
 

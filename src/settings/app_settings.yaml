@@ -39,14 +39,14 @@ args:
         default_value: abc
         about: Sets topics of kafka
         takes_value: true
-    - eventstore-socket-addr:
-        short: a
-        long: eventstore-socket-addr
-        env: EVENTSTORE_SOCKET_ADDR
-        value_name: EVENTSTORE_SOCKET_ADDR
+    - eventstore-host-with-parameters:
+        short: h
+        long: eventstore-host-with-parameters
+        env: EVENTSTORE_HOST_WITH_PARAMETERS
+        value_name: EVENTSTORE_HOST_WITH_PARAMETERS
         required: true
-        about: Sets socket address of eventstore
-        default_value: 127.0.0.1:1113
+        about: Sets host string of eventstore
+        default_value: localhost:2113?tls=false
         takes_value: true
     - eventstore-username:
         short: u
@@ -64,5 +64,5 @@ args:
         value_name: EVENTSTORE_PASSWORD
         required: true
         about: Sets password of eventstore
-        default_value: demo
+        default_value: changeit
         takes_value: true

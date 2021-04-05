@@ -1,3 +1,4 @@
+use chrono::Utc;
 use eventstore::{
     AppendToStreamOptions, Client, Credentials, EventData, ExpectedRevision, ReadResult,
     ReadStreamOptions,
@@ -17,21 +18,25 @@ use uuid::Uuid;
 pub(crate) struct EventstoreService {
     pub client: Client,
 }
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TestEvent {
+    denem: String,
+}
 
 impl EventstoreService {
     pub async fn init(settings: EventstoreSettings) -> Self {
         let clientSettings = format!(
             "esdb://{}:{}@{}",
-            settings.username, settings.password, settings.socket_addr
+            settings.username, settings.password, settings.host_with_parameters
         )
         .parse()
         .unwrap();
         let client = Client::create(clientSettings).await.unwrap();
         EventstoreService { client }
     }
-    pub fn get_event_type(event_model: &EventModel) -> &'static str {
+    pub fn get_event_type(event_model: &EventModel) -> String {
         match event_model {
-            EventModel::NoteCreatedEventModel(_) => "note_created",
+            EventModel::NoteCreatedEventModel(_) => "note_created".to_string(),
         }
     }
 
@@ -48,14 +53,12 @@ impl EventstoreService {
     ) -> Result<(), EventstoreServiceError> {
         // region append-to-stream
 
-        let event = EventData::json(Self::get_event_type(&data), &data)
-            .expect("Evendata error")
-            .id(Self::get_event_id(&data)); //id = event_id
-        let options =
-            AppendToStreamOptions::default().expected_revision(ExpectedRevision::NoStream);
+        let event = EventData::json(Self::get_event_type(&data), &data).expect("Evendata error").id(Self::get_event_id(&data));
+
+        
 
         client
-            .append_to_stream(format!("{}_{}", "user", user_id), &options, event)
+            .append_to_stream(format!("{}-{}", "user", user_id), &Default::default(), event)
             .map_err(|err| EventstoreServiceError::from(&err))
             .map_ok(|_| ())
             .await
