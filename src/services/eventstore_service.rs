@@ -26,12 +26,14 @@ impl EventstoreService {
     pub fn get_event_type(event_model: &EventModel) -> String {
         match event_model {
             EventModel::NoteCreatedEventModel(_) => "note_created".to_string(),
+            EventModel::ParentOfNoteChangedEventModel(_) => "parent_of_note_changed".to_string(),
         }
     }
 
     pub fn get_event_id(event_model: &EventModel) -> Uuid {
         match event_model {
             EventModel::NoteCreatedEventModel(event) => event.event_id,
+            EventModel::ParentOfNoteChangedEventModel(event) => event.event_id,
         }
     }
     pub async fn append_to_stream(
