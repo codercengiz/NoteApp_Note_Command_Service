@@ -12,6 +12,15 @@ make generate-all
 make run
 ```
 
+## TODO
+Healthcheck
+Api version mechanism
+File upload event
+Image upload event
+File Delete event
+Image delete event
+Note Delete event
+
 ## HTTP-API
 ### Create Note
 ```console
