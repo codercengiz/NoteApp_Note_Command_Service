@@ -13,13 +13,20 @@ make run
 ```
 
 ## TODO
-Healthcheck
-Api version mechanism
-File upload event
-Image upload event
-File Delete event
-Image delete event
-Note Delete event
+- [x] Settings 
+- [x] Web Server with warp
+- [x] Eventstoredb 
+- [x] Kafka
+- [x] Note Parent Change event
+- [x] Note Basic Info Change event
+- [ ] File upload event
+- [ ] Image upload event
+- [ ] File Delete event
+- [ ] Image delete event
+- [ ] Note Delete event
+- [ ] Healthcheck
+- [ ] Api version mechanism
+- [ ] Docker file
 
 ## HTTP-API
 ### Create Note
