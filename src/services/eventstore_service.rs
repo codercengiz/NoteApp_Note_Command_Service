@@ -27,6 +27,7 @@ impl EventstoreService {
         match event_model {
             EventModel::NoteCreatedEventModel(_) => "note_created".to_string(),
             EventModel::ParentOfNoteChangedEventModel(_) => "parent_of_note_changed".to_string(),
+            EventModel::BasicInfoOfNoteChangedEventModel(_)=> "basic_info_of_note_changed".to_string(),
         }
     }
 
@@ -34,6 +35,7 @@ impl EventstoreService {
         match event_model {
             EventModel::NoteCreatedEventModel(event) => event.event_id,
             EventModel::ParentOfNoteChangedEventModel(event) => event.event_id,
+            EventModel::BasicInfoOfNoteChangedEventModel(event) => event.event_id,
         }
     }
     pub async fn append_to_stream(

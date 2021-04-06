@@ -1,4 +1,5 @@
 use crate::models::{
+    BasicInfoOfNoteChangedEventModel, ChangeBasicInfoNoteCommandModel,
     ChangeParentOfNoteCommandModel, CommandModel, CreateNoteCommandModel, EventModel,
     NoteCreatedEventModel, ParentOfNoteChangedEventModel,
 };
@@ -33,6 +34,7 @@ impl WebServer {
         let routes = self
             .add_note_route()
             .or(self.change_parent_of_note_route())
+            .or(self.change_basic_info_note_route())
             .with(
                 warp::cors()
                     .allow_any_origin()
@@ -54,7 +56,9 @@ impl WebServer {
             .and(Self::with_kafka_service(self.kafka_service.clone()))
             .and_then(Self::add_note_handler)
     }
-    fn change_parent_of_note_route(&self) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
+    fn change_parent_of_note_route(
+        &self,
+    ) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
         warp::path!("change-parent-note")
             .and(warp::post())
             .and(warp::body::json())
@@ -65,6 +69,52 @@ impl WebServer {
             .and(Self::with_kafka_service(self.kafka_service.clone()))
             .and_then(Self::change_parent_of_note_handler)
     }
+    fn change_basic_info_note_route(
+        &self,
+    ) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
+        warp::path!("change-basic-info-note")
+            .and(warp::post())
+            .and(warp::body::json())
+            .and(warp::header::<String>("user-id"))
+            .and(Self::with_eventstore_service(
+                self.eventstore_service.clone(),
+            ))
+            .and(Self::with_kafka_service(self.kafka_service.clone()))
+            .and_then(Self::change_basic_info_note_handler)
+    }
+
+    //---------------------- end route
+    pub async fn add_note_handler(
+        create_note_model: CreateNoteCommandModel,
+        user_id: String,
+        eventstore_service: EventstoreService,
+        kafka_service: KafkaService,
+    ) -> Result<Box<dyn warp::Reply>, Infallible> {
+        Self::add_note(
+            create_note_model,
+            user_id,
+            eventstore_service,
+            kafka_service,
+        )
+        .await
+    }
+    pub async fn add_note(
+        create_note_model: CreateNoteCommandModel,
+        user_id: String,
+        eventstore_service: EventstoreService,
+        kafka_service: KafkaService,
+    ) -> Result<Box<dyn warp::Reply>, Infallible> {
+        let command_model = CommandModel::CreateNoteCommandModel(create_note_model);
+        let event_model = Self::command_to_event(command_model);
+        //Ok(Box::new(warp::reply::json(&customer)))
+        let _res_eventstore = eventstore_service
+            .append_to_stream(&eventstore_service.client, &user_id, &event_model)
+            .await;
+        let json = serde_json::to_string(&event_model).expect("Serde Error!");
+        let _res = kafka_service.produce_message(&json, user_id);
+        return Ok(Box::new(warp::reply::json(&event_model)));
+    }
+
     pub async fn change_parent_of_note_handler(
         change_parent_of_note_model: ChangeParentOfNoteCommandModel,
         user_id: String,
@@ -96,27 +146,29 @@ impl WebServer {
         let _res = kafka_service.produce_message(&json, user_id);
         return Ok(Box::new(warp::reply::json(&event_model)));
     }
-    pub async fn add_note_handler(
-        create_note_model: CreateNoteCommandModel,
+
+    pub async fn change_basic_info_note_handler(
+        change_basic_info_note_model: ChangeBasicInfoNoteCommandModel,
         user_id: String,
         eventstore_service: EventstoreService,
         kafka_service: KafkaService,
     ) -> Result<Box<dyn warp::Reply>, Infallible> {
-        Self::add_note(
-            create_note_model,
+        Self::change_basic_info_note(
+            change_basic_info_note_model,
             user_id,
             eventstore_service,
             kafka_service,
         )
         .await
     }
-    pub async fn add_note(
-        create_note_model: CreateNoteCommandModel,
+    pub async fn change_basic_info_note(
+        change_basic_info_note_model: ChangeBasicInfoNoteCommandModel,
         user_id: String,
         eventstore_service: EventstoreService,
         kafka_service: KafkaService,
     ) -> Result<Box<dyn warp::Reply>, Infallible> {
-        let command_model = CommandModel::CreateNoteCommandModel(create_note_model);
+        let command_model =
+            CommandModel::ChangeBasicInfoNoteCommandModel(change_basic_info_note_model);
         let event_model = Self::command_to_event(command_model);
         //Ok(Box::new(warp::reply::json(&customer)))
         let _res_eventstore = eventstore_service
@@ -162,6 +214,15 @@ impl WebServer {
                     event_timestamp: Utc::now(),
                     id: change_parent_of_note_model.id,
                     pid: change_parent_of_note_model.pid,
+                })
+            }
+            CommandModel::ChangeBasicInfoNoteCommandModel(change_basic_info_note_model) => {
+                EventModel::BasicInfoOfNoteChangedEventModel(BasicInfoOfNoteChangedEventModel {
+                    event_id: Uuid::new_v4(),
+                    event_timestamp: Utc::now(),
+                    id: change_basic_info_note_model.id,
+                    text: change_basic_info_note_model.text,
+                    title: change_basic_info_note_model.title,
                 })
             }
         }
