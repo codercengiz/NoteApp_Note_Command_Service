@@ -1,17 +1,10 @@
-use chrono::Utc;
-use eventstore::{
-    AppendToStreamOptions, Client, Credentials, EventData, ExpectedRevision, ReadResult,
-    ReadStreamOptions,
-};
+use eventstore::{Client, EventData };
 use futures::TryFutureExt;
-use serde::{Deserialize, Serialize};
-
 use crate::{
-    models::{EventModel, NoteCreatedEventModel},
+    models::{EventModel},
     settings::EventstoreSettings,
 };
 use eventstore::Error as EventStoreError;
-use serde_json::error::Error as SerdeDeserilizationError;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -19,16 +12,15 @@ pub(crate) struct EventstoreService {
     pub client: Client,
 }
 
-
 impl EventstoreService {
     pub async fn init(settings: EventstoreSettings) -> Self {
-        let clientSettings = format!(
+        let client_settings = format!(
             "esdb://{}:{}@{}",
             settings.username, settings.password, settings.host_with_parameters
         )
         .parse()
         .unwrap();
-        let client = Client::create(clientSettings).await.unwrap();
+        let client = Client::create(client_settings).await.unwrap();
         EventstoreService { client }
     }
     pub fn get_event_type(event_model: &EventModel) -> String {
@@ -50,12 +42,16 @@ impl EventstoreService {
     ) -> Result<(), EventstoreServiceError> {
         // region append-to-stream
 
-        let event = EventData::json(Self::get_event_type(&data), &data).expect("Evendata error").id(Self::get_event_id(&data));
-
-        
+        let event = EventData::json(Self::get_event_type(&data), &data)
+            .expect("Evendata error")
+            .id(Self::get_event_id(&data));
 
         client
-            .append_to_stream(format!("{}-{}", "user", user_id), &Default::default(), event)
+            .append_to_stream(
+                format!("{}-{}", "user", user_id),
+                &Default::default(),
+                event,
+            )
             .map_err(|err| EventstoreServiceError::from(&err))
             .map_ok(|_| ())
             .await
@@ -76,7 +72,7 @@ pub(crate) enum EventstoreServiceError {
     Eventstore,
 }
 impl From<&EventStoreError> for EventstoreServiceError {
-    fn from(err: &EventStoreError) -> Self {
+    fn from(_err: &EventStoreError) -> Self {
         EventstoreServiceError::Eventstore
     }
 }

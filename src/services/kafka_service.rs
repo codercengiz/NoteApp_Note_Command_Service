@@ -35,7 +35,7 @@ impl KafkaService {
         producer.send(&Record {
             topic: &self.topic,
             partition: -1,
-            key: key,
+            key,
             value: data,
         })
 
