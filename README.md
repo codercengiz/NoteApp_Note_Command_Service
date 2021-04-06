@@ -17,6 +17,7 @@ make run
 - [x] Web Server with warp
 - [x] Eventstoredb 
 - [x] Kafka
+- [x] Note Create event
 - [x] Note Parent Change event
 - [x] Note Basic Info Change event
 - [ ] File upload event
