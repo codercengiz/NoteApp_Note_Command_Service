@@ -55,8 +55,7 @@ impl Settings {
             host_with_parameters: matches
                 .value_of("eventstore-host-with-parameters")
                 .expect("Invalid eventstore host")
-                .parse()
-                .expect("Unable to parse host"),
+                .to_string(),
 
             username: matches
                 .value_of("eventstore-username")

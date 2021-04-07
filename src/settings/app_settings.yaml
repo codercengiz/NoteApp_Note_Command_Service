@@ -1,6 +1,6 @@
 name: noteapp_note_command_service
 version: "0.1.0"
-author: Cengiz G.  <codercengiz@gmail.com>
+author: CG  <abc@abc.com>
 about: Note App
 args:
     - domain:
