@@ -38,16 +38,69 @@ curl --location --request POST 'http://localhost:8080/add-note' \
 --data-raw '
 {
     "commandId": "ef256002-8b46-4ee3-bd6c-9e8acd791c6a",
-    "commandTimestamp": 1617472845,
+    "commandTimestamp": 1618086207507,
     "commandCreatorId":"7faaed09-331d-40e1-8048-a122b98ea9af",
     "commandCreatorAppType":2,
     "id":"2e219229-ff2f-42db-9887-d7f18984bf2f",
     "pid":"",
     "userId":"7faaed09-331d-40e1-8048-a122b98ea9af",
-    "createDate":1617472845,
+    "createDate":1618086207507,
     "text":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'\''s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
     "title":"What is Lorem Ipsum?",
     "image":"",
     "file":""
+}'
+```
+
+### Change Parent of Note
+```console
+curl --location --request POST 'http://localhost:8080/change-parent-note' \
+--header 'Content-Type: application/json' \
+--header 'user-id: 7faaed09-331d-40e1-8048-a122b98ea9af' \
+--data-raw '
+{
+    "commandId": "ef256002-8b46-4ee3-bd6c-9e8acd791c6a",
+    "commandTimestamp": 1618086207507,
+    "commandCreatorId":"7faaed09-331d-40e1-8048-a122b98ea9af",
+    "commandCreatorAppType":2,
+    "id":"0a000000-ff2f-42db-9887-d7f18984bf2f",
+    "pid":"0a111111-ff2f-42db-9887-d7f18984bf2f"
+    
+}'
+```
+
+### Change Parent of Note
+```console
+curl --location --request POST 'http://localhost:8080/change-parent-note' \
+--header 'Content-Type: application/json' \
+--header 'user-id: 7faaed09-331d-40e1-8048-a122b98ea9af' \
+--data-raw '
+{
+    "commandId": "ef256002-8b46-4ee3-bd6c-9e8acd791c6a",
+    "commandTimestamp": 1618086207507,
+    "commandCreatorId":"7faaed09-331d-40e1-8048-a122b98ea9af",
+    "commandCreatorAppType":2,
+    "id":"0a000000-ff2f-42db-9887-d7f18984bf2f",
+    "pid":"0a111111-ff2f-42db-9887-d7f18984bf2f"
+    
+}'
+```
+
+
+### Change Basic Info of Note
+```console
+curl --location --request POST 'http://localhost:8080/change-basic-info-note' \
+--header 'Content-Type: application/json' \
+--header 'user-id: 7faaed09-331d-40e1-8048-a122b98ea9af' \
+--data-raw '
+{
+    "commandId": "ef256002-8b46-4ee3-bd6c-9e8acd791c6a",
+    "commandTimestamp": 1618086207507,
+    "commandCreatorId":"7faaed09-331d-40e1-8048-a122b98ea9af",
+    "commandCreatorAppType":2,
+    "id":"0a000000-ff2f-42db-9887-d7f18984bf2f",
+    "text":"Changed.....Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry'\''s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+    "title":"....Lorem Ipsum is simply dumm....."
+    
 }'
 ```
